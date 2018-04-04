@@ -1,7 +1,8 @@
-1.使用输入框以及键值对的方式进行前端的输入完成
-	url:[-]
-	key:[-]	value[-]
-	key:[-] value[-]
-
-2.https://blog.csdn.net/colton_null/article/details/76696674
+2.文件上传下载
 	https://yq.aliyun.com/articles/401284
+	
+3.交互的场景
+	--人流量：历史数据输入 | 实时监控/闸机/WIFI探针
+	--票务：购票系统 | 线下买票系统
+	--停车场：停车场管理系统
+	flow/ticket_online/ticket_offline/parking_lot

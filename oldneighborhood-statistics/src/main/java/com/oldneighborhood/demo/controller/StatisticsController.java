@@ -7,17 +7,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/statistics")
 public class StatisticsController {
 	
-	//要不要支持文件导入
+	//历史数据导入
 	@RequestMapping("/history")
 	public String historyData() {
 		return "";
 	}
 	
-	//创建新的API接口
-	@RequestMapping("/new")
-	public String newInterface() {
+	@RequestMapping("/display")
+	public String dataDisplay() {
 		return "";
 	}
+	
 	//停车场车流量
 	@RequestMapping("/parkinglot")
 	public String parkLotData() {
@@ -33,10 +33,5 @@ public class StatisticsController {
 	public String ticketData() {
 		return "";
 	}
-	//预测计算
-	@RequestMapping("/future")
-	public String futureData() {
-		return "";
-	}
-
+	
 }
