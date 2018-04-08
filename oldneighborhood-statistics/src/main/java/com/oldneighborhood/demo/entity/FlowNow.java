@@ -19,17 +19,17 @@ import lombok.Data;
 public class FlowNow implements Serializable{
 	private static final long serialVersionUID = -1904203439826898890L;
 	
-	private String flow_ID;
+	private String now_ID;
 	private Integer site_ID;
-	private Timestamp flow_now;
-	private int flow_amount;
-	private String flow_class;
+	private Timestamp now_flow;
+	private int now_amount;
+	private String now_class;
 	
 	public FlowNow(Integer site_ID, Timestamp flow_now, int flow_amount, String flow_class) {
 		super();
 		this.site_ID = site_ID;
-		this.flow_now = flow_now;
-		this.flow_amount = flow_amount;
-		this.flow_class = flow_class;
+		this.now_flow = flow_now;
+		this.now_amount = flow_amount;
+		this.now_class = flow_class;
 	}
 }
