@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,21 +13,42 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
-
+/**
+ * @ClassName: RecordController  
+ * @Description: 实现 导入文件解析（使用模版填写） 、导出数据的功能
+ * @author user005  
+ * @date 2018年4月10日  
+ */
 @RestController
-@RequestMapping("/file")
-public class FileController {
+@RequestMapping("/record")
+public class RecordController {
 	//日志记录
-	private static final Logger logger = LoggerFactory.getLogger(FileController.class);
+	private static final Logger logger = LoggerFactory.getLogger(RecordController.class);
 	
 	@Value("${file.upload.path}")
 	private String uploadpath;
 	
+	//历史数据导入(转发到file controller进行文件处理)
+	@RequestMapping("/import")
+	public String historyData(@RequestBody Map<String, Object> reqMap) {
+		RestTemplate restTemplate = new RestTemplate();
+		String res = restTemplate.postForObject("", reqMap, String.class);
+		return res;
+	}
+	
+	@RequestMapping("/export")
+	public String export(@RequestBody Map<String, Object> reqMap) {
+		return "";
+	}
+	
+	//可以返回1.上传是否成功的状态2.文件路径  ->进行下一步的解析
+	//上传成功！正在解析中->写入数据库
 	@RequestMapping("/upload")
 	public String upload(@RequestParam("upload") MultipartFile file) {
 		
@@ -52,6 +74,7 @@ public class FileController {
 		//存储文件到指定目录
 		try {
 			file.transferTo(dest);
+			//存储成功尚未解析
 			return "{\"result\":\"success\"}";
 		} catch (IllegalStateException e) {
 			e.printStackTrace();

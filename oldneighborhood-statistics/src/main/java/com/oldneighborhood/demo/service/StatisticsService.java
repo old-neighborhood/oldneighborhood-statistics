@@ -1,20 +1,21 @@
 package com.oldneighborhood.demo.service;
 
-import java.util.Date;
+import java.text.ParseException;
+import java.util.Map;
+
+import com.oldneighborhood.demo.entity.Flow;
+import com.oldneighborhood.demo.entity.FlowNow;
+import com.oldneighborhood.demo.entity.ParkingLot;
+import com.oldneighborhood.demo.entity.Ticket;
 
 public interface StatisticsService {
 	
-	public String HistoryData();
+	public ParkingLot parkLotData(Map<String, Object> map);
 	
-	public String parkLotData();
+	public Ticket ticketData(Map<String, Object> map) throws ParseException;
 	
-	public String dataDisplay();
+	//默认 /日流量date a->b / 某天date
+	public Flow flowData(Map<String, Object> map) throws ParseException;
 	
-	//默认
-	public String flowData();
-	//日流量
-	public String flowData(Date dateon, Date dateoff);
-	//某天
-	public String flowData(Date date);
-	
+	public FlowNow realFlow(Map<String, Object> map);
 }

@@ -24,12 +24,22 @@ public class Flow implements Serializable{
 	private Date flow_date;
 	private int flow_amount;
 	private String flow_class;
-	
-	public Flow(Integer site_ID, Date flow_date, int flow_amount, String flow_class) {
+	//有没有人流量等级的规定？
+	public Flow(Integer site_ID, Date flow_date, int flow_amount) {
 		super();
 		this.site_ID = site_ID;
 		this.flow_date = flow_date;
 		this.flow_amount = flow_amount;
-		this.flow_class = flow_class;
+		if (flow_amount > 100000) {
+			this.flow_class = "5";
+		}else if (flow_amount > 10000) {
+			this.flow_class = "4";
+		}else if (flow_amount > 1000) {
+			this.flow_class = "3";
+		}else if (flow_amount > 100) {
+			this.flow_class = "2";
+		}else {
+			this.flow_class = "1";
+		}
 	}
 }

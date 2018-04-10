@@ -1,36 +1,36 @@
 package com.oldneighborhood.demo.controller;
 
+import java.text.ParseException;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.oldneighborhood.demo.service.StatisticsService;
 
 @RestController
 @RequestMapping("/statistics")
 public class StatisticsController {
 	
-	//历史数据导入
-	@RequestMapping("/history")
-	public String historyData() {
+	@Autowired
+	private StatisticsService statisticsService;
+	
+	//人流量
+	@RequestMapping("/crowd")
+	public String dataDisplay(@RequestBody Map<String, Object> reqMap) throws ParseException {
+		statisticsService.flowData(reqMap);
 		return "";
 	}
-	
-	@RequestMapping("/display")
-	public String dataDisplay() {
-		return "";
-	}
-	
 	//停车场车流量
 	@RequestMapping("/parkinglot")
-	public String parkLotData() {
-		return "";
-	}
-	//人流量
-	@RequestMapping("/crowd") 
-	public String crowdData() {
+	public String parkLotData(@RequestBody Map<String, Object> reqMap) {
 		return "";
 	}
 	//票务
 	@RequestMapping("/ticket")
-	public String ticketData() {
+	public String ticketData(@RequestBody Map<String, Object> reqMap) {
 		return "";
 	}
 	

@@ -25,11 +25,21 @@ public class FlowNow implements Serializable{
 	private int now_amount;
 	private String now_class;
 	
-	public FlowNow(Integer site_ID, Timestamp flow_now, int flow_amount, String flow_class) {
+	public FlowNow(Integer site_ID, Timestamp now_flow, int now_amount) {
 		super();
 		this.site_ID = site_ID;
-		this.now_flow = flow_now;
-		this.now_amount = flow_amount;
-		this.now_class = flow_class;
+		this.now_flow = now_flow;
+		this.now_amount = now_amount;
+		if (now_amount > 100000) {
+			this.now_class = "5";
+		}else if (now_amount > 10000) {
+			this.now_class = "4";
+		}else if (now_amount > 1000) {
+			this.now_class = "3";
+		}else if (now_amount > 100) {
+			this.now_class = "2";
+		}else {
+			this.now_class = "1";
+		}
 	}
 }
