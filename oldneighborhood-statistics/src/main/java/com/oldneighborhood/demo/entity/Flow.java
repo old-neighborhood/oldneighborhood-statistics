@@ -20,6 +20,7 @@ public class Flow implements Serializable{
 	private static final long serialVersionUID = -8513420741491188780L;
 	
 	private String flow_ID;
+//	private String site_name;
 	private Integer site_ID;
 	private Date flow_date;
 	private int flow_amount;
