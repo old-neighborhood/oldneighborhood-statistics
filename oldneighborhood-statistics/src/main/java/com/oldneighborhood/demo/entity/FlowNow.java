@@ -20,6 +20,7 @@ public class FlowNow implements Serializable{
 	private static final long serialVersionUID = -1904203439826898890L;
 	
 	private String now_ID;
+//	private String site_name;
 	private Integer site_ID;
 	private Timestamp now_flow;
 	private int now_amount;
