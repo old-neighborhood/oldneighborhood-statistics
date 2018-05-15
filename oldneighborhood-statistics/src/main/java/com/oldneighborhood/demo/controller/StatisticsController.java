@@ -19,7 +19,7 @@ public class StatisticsController {
 	
 	//人流量
 	@RequestMapping("/crowd")
-	public String dataDisplay(@RequestBody Map<String, Object> reqMap) throws ParseException {
+	public String crowdData(@RequestBody Map<String, Object> reqMap) throws ParseException {
 		
 		statisticsService.flowData(reqMap);
 		return "";
