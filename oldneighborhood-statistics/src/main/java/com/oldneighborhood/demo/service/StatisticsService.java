@@ -3,19 +3,18 @@ package com.oldneighborhood.demo.service;
 import java.text.ParseException;
 import java.util.Map;
 
-import com.oldneighborhood.demo.entity.Flow;
-import com.oldneighborhood.demo.entity.FlowNow;
-import com.oldneighborhood.demo.entity.ParkingLot;
-import com.oldneighborhood.demo.entity.Ticket;
-
 public interface StatisticsService {
+	//存储数据
+	public String saveTicketData() throws ParseException;
 	
-	public ParkingLot parkLotData(Map<String, Object> map);
+	public String saveFlowData() throws ParseException;
 	
-	public Ticket ticketData(Map<String, Object> map) throws ParseException;
+	//读数据json
+	public String getFlowData();
 	
-	//默认 /日流量date a->b / 某天date
-	public Flow flowData(Map<String, Object> map) throws ParseException;
+	public String getTicketData();
+	//从url读取数据
+	public String getParkLotData();
 	
-	public FlowNow realFlow(Map<String, Object> map);
+	
 }

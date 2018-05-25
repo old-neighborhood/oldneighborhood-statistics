@@ -19,19 +19,17 @@ public class StatisticsController {
 	
 	//人流量
 	@RequestMapping("/crowd")
-	public String crowdData(@RequestBody Map<String, Object> reqMap) throws ParseException {
-		
-		statisticsService.flowData(reqMap);
-		return "";
-	}
-	//停车场车流量
-	@RequestMapping("/parkinglot")
-	public String parkLotData(@RequestBody Map<String, Object> reqMap) {
-		return "";
+	public String crowdData() throws ParseException {
+		return statisticsService.getFlowData();
 	}
 	//票务
 	@RequestMapping("/ticket")
-	public String ticketData(@RequestBody Map<String, Object> reqMap) {
+	public String ticketData() {
+		return statisticsService.getTicketData();
+	}
+	//停车场车流量
+	@RequestMapping("/parkinglot")
+	public String parkLotData() {
 		return "";
 	}
 	

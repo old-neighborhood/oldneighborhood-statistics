@@ -3,82 +3,131 @@ package com.oldneighborhood.demo.service.impl;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.oldneighborhood.demo.dao.FlowDao;
+import com.oldneighborhood.demo.dao.TicketDao;
 import com.oldneighborhood.demo.entity.Flow;
-import com.oldneighborhood.demo.entity.FlowNow;
 import com.oldneighborhood.demo.entity.ParkingLot;
 import com.oldneighborhood.demo.entity.Ticket;
 import com.oldneighborhood.demo.service.StatisticsService;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
  * @ClassName: StatisticsServiceImpl
  * @Description:
  * 1.历史数据直接从数据库中取出展示
- * 2.实时数据通过API获取（获取失败，则从数据库最近的一次数据中读取）
- * 3.每隔一小时从API读取人流量数据存入数据库中，每隔十分钟读取停车场数据存入数据库中，每天统计票务存入数据库中
+ * 2.每隔十分钟试图读取停车场数据更新到前端
+ * 3.每天读取人流量数据存入数据库中，每天统计票务存入数据库中
  * @author user005
  * @date 2018年4月10日
  */
 @Service
 public class StatisticsServiceImpl implements StatisticsService{
 	
+	@Autowired
+	private FlowDao flowDao;
+	@Autowired
+	private TicketDao ticketDao;
+	//返回所有数据JSON
+	@Override
+	public String getFlowData() {
+		List<Flow> flows = flowDao.findAll();
+		JSONArray json = JSONArray.fromObject(flows);
+		return json.toString();
+	}
+	
+	@Override
+	public String getTicketData() {
+		List<Ticket> tickets = ticketDao.findAll();
+		JSONArray json = JSONArray.fromObject(tickets);
+		return json.toString();
+	}
+	
 	//public调用controller 获取url(已经拼接后url)
-	private static String urlPL;
-	private static String urlTicket;
-	private static String urlFlow;
+	@Value("${config.url}")
+	private String configURL;
+	
 	RestTemplate rs = new RestTemplate();
 	
+	/**
+	 * 触发请求 -> 返回result=notfound/success[,site_name="",pl_ammount=""]
+	 */
 	@Override
-	public ParkingLot parkLotData(Map<String, Object> map) {
-		String res = rs.getForObject(urlPL, String.class);
-		JSONObject js = JSONObject.fromObject(res);
-		ParkingLot pl = new ParkingLot(
-				js.getInt(""), 
-				Timestamp.valueOf(js.getString("")), 
-				js.getInt(""), js.getInt(""));
-		return pl;
+	public String getParkLotData() {
+		//获取API url key
+//		String plurl = "http://111.231.107.63:8087/config/api/oneAPI";
+		Map<String, Object> reqMap = new HashMap<String, Object>();
+		reqMap.put("api_name", "parkinglot");
+		String api = rs.getForObject(configURL, String.class, reqMap);
+		JSONObject json = JSONObject.fromObject(api);
+		//返回是否为空？
+		if (json.isEmpty()) {
+			return "{\"result\":\"notfound\"}";
+		}
+		//访问Rest API接口
+		String _url = json.getString("api_url");
+		String _key = json.getString("api_key");
+		Map<String, Object> _map = new HashMap<String, Object>();
+		_map.put("key", _key);
+		String resflow = rs.getForObject(_url, String.class, _map);
+		JSONObject js = JSONObject.fromObject(resflow);
+		js.put("result", "success");
+		System.out.println(js.toString());
+//		ParkingLot pl = new ParkingLot(
+//				js.getString("site_name"), 
+//				Timestamp.valueOf(js.getString("pl_now")), 
+//				js.getInt("pl_amount"), 
+//				js.getInt("pl_available"));
+		return js.toString();
 	}
+	
 
+	/**
+	 * 请求 - 存储到数据库 - 返回操作结果
+	 */
 	@Override
-	public Ticket ticketData(Map<String, Object> map) throws ParseException {
-		String res = rs.getForObject(urlTicket, String.class);
+	public String saveTicketData() throws ParseException {
+		Map<String, Object> reqMap = new HashMap<String, Object>();
+		reqMap.put("api_name", "ticket");
+		String res = rs.getForObject(configURL, String.class, reqMap);
 		JSONObject js = JSONObject.fromObject(res);
+		if (js.isEmpty()) {
+			return "{\"result\":\"notfound\"}";
+		}
 		Ticket ticket = new Ticket(
-				js.getInt(""), 
-				new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(js.getString("")), 
-				js.getInt(""), 
-				js.getInt(""));
-		return ticket;
+				js.getString("site_name"),
+				new SimpleDateFormat("yyyy-MM-dd").parse(js.getString("ticket_date")), 
+				js.getInt("ticket_online"), 
+				js.getInt("ticket_offline"),
+				js.getInt("ticket_amount"));
+		Ticket ticket_new = ticketDao.save(ticket);
+		if (ticket_new!=null) {
+			return "{\"result\":\"success\"}";
+		}
+		return "{\"result\":\"error\"}";
 	}
 	
 	
 
 	@Override
-	public Flow flowData(Map<String, Object> map) throws ParseException {
-		String res = rs.getForObject(urlFlow, String.class);
+	public String saveFlowData() throws ParseException {
+		String res = rs.getForObject(configURL, String.class);
 		JSONObject js = JSONObject.fromObject(res);
 		Flow flow = new Flow(
-				js.getInt(""), 
+				js.getString("site_name"),
 				new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(js.getString("")), 
 				js.getInt(""));
-		return flow;
-	}
-
-	@Override
-	public FlowNow realFlow(Map<String, Object> map) {
-		String res = rs.getForObject(urlFlow, String.class);
-		JSONObject js = JSONObject.fromObject(res);
-		FlowNow realflow = new FlowNow(
-				js.getInt(""), 
-				Timestamp.valueOf(js.getString("")),
-				js.getInt(""));
-		return realflow;
+		return "";
 	}
 
 }
